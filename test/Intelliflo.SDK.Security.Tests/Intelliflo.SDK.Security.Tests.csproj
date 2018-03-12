@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Intelliflo.SDK.Security\Intelliflo.SDK.Security.csproj" />
+    <ProjectReference Include="..\..\src\Intelliflo.SDK.Security\Intelliflo.SDK.Security.csproj" />
   </ItemGroup>
 
 </Project>
