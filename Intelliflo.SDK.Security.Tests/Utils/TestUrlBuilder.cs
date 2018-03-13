@@ -1,19 +1,20 @@
 ﻿using FluentAssertions;
 using Intelliflo.SDK.Security.Utils;
-using Xunit;
+using NUnit.Framework;
 
 namespace Intelliflo.SDK.Security.Tests.Utils
 {
     public class TestUrlBuilder
     {
-        private readonly UrlBuilder underTest;
+        private UrlBuilder underTest;
 
-        public TestUrlBuilder()
+        [SetUp]
+        public void SetUp()
         {
             underTest = new UrlBuilder();
         }
 
-        [Fact]
+        [Test]
         public void AddAbsoluteUri_Without_Query_String_Should_Provide_The_Same_Uri()
         {
             underTest.AddAbsoluteUri("http://google.com?q=dragon");
@@ -21,11 +22,9 @@ namespace Intelliflo.SDK.Security.Tests.Utils
             underTest.ToUri().ToString().Should().Be("http://google.com/?q=dragon");
         }
 
-
-        [Theory]
-        [InlineData("http://google.com", "q", "value", "http://google.com/?q=value")]
-        [InlineData("http://google.com", "q a a ", "b b b ", "http://google.com/?q a a =b b b")]
-        [InlineData("http://google.com?p1=v1", "q a a ", "b b b ", "http://google.com/?p1=v1&q a a =b b b")]
+        [TestCase("http://google.com", "q", "value", "http://google.com/?q=value")]
+        [TestCase("http://google.com", "q a a ", "b b b ", "http://google.com/?q a a =b b b")]
+        [TestCase("http://google.com?p1=v1", "q a a ", "b b b ", "http://google.com/?p1=v1&q a a =b b b")]
         public void AddQueryParam_Should_Appedn_Parameters_Without_UrlEncoding(string url, string queryParam, string value, string expectedResult)
         {
             underTest.AddAbsoluteUri(url);
@@ -34,7 +33,7 @@ namespace Intelliflo.SDK.Security.Tests.Utils
             underTest.ToUri().ToString().Should().Be(expectedResult);
         }
 
-        [Fact]
+        [Test]
         public void AddQueryParam_When_Several_Parameters_Added_Should_Produce_Expected_Url()
         {
             underTest.AddAbsoluteUri("http://google.com?p1=v1");
