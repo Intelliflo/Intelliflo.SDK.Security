@@ -2,21 +2,21 @@
 using System.Collections.Generic;
 using FluentAssertions;
 using Intelliflo.SDK.Security.Utils;
-using Xunit;
+using NUnit.Framework;
 
 namespace Intelliflo.SDK.Security.Tests.Utils
 {
     public class TestDateConverter
     {
-        [Theory]
-        [MemberData(nameof(CreateToIso8601FormatTests))]
+        [Test]
+        [TestCaseSource(nameof(CreateToIso8601FormatTests))]
         public void ToIso8601Format_Should_Return_Expected_String(DateTime value, string expectedResult)
         {
             value.ToIso8601Format().Should().Be(expectedResult);
         }
 
-        [Theory]
-        [MemberData(nameof(CreateToIso8601FormatTests))]
+        [Test]
+        [TestCaseSource(nameof(CreateToIso8601FormatTests))]
         public void FromIso8601Format_Should_Return_Expected_DateTime(DateTime expectedResult, string value)
         {
             value.FromIso8601Format().Should().Be(expectedResult);

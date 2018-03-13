@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using FluentAssertions;
-using Xunit;
+using NUnit.Framework;
+
 
 namespace Intelliflo.SDK.Security.Tests
 {
+    [TestFixture]
     public class TestSignatureRequest
     {
-        [Fact]
+        [Test]
         public void CreateSignRequest_With_Default_Parameters_Should_Create_Expected_Request()
         {
             var actual = SignatureRequest.CreateSignRequest(
@@ -42,7 +44,7 @@ namespace Intelliflo.SDK.Security.Tests
         }
 
 
-        [Fact]
+        [Test]
         public void CreateSignRequest_With_Non_Default_Parameters_Should_Create_Expected_Request()
         {
             var actual = SignatureRequest.CreateSignRequest(
@@ -81,7 +83,7 @@ namespace Intelliflo.SDK.Security.Tests
         }
 
 
-        [Fact]
+        [Test]
         public void CreateVerificationRequest_With_Default_Parameters_Should_Initialize_Request_From_Url_And_Parameters()
         {
             var actual = SignatureRequest.CreateVerificationRequest(
@@ -114,7 +116,7 @@ namespace Intelliflo.SDK.Security.Tests
                 });
         }
 
-        [Fact]
+        [Test]
         public void CreateVerificationRequest_With_Non_Default_Parameters_Should_Initialize_Request_From_Url_And_Parameters()
         {
             var actual = SignatureRequest.CreateVerificationRequest(
