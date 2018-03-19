@@ -6,8 +6,9 @@
 /**
  * By default the master branch of the library is loaded
  * Use the include directive below ONLY if you need to load a branch of the library
- * @Library('intellifloworkflow@IP-32917')
+ * @Library('intellifloworkflow@IP-34341')
  */
+
 import org.intelliflo.*
 
 def changeset = new Changeset()
@@ -21,10 +22,9 @@ def jiraCredentialsId = '32546070-393c-4c45-afcd-8e8f1de1757b'
 def stageName
 def semanticVersion
 def packageVersion
-def stackName
 def globals = env
 def verboseLogging = false
-def nodeLabel = 'windows'
+def nodeLabel = 'devops'
 pipeline {
 
     agent none
@@ -108,7 +108,6 @@ pipeline {
                     } else {
                         currentBuild.displayName = "${githubRepoName}(${packageVersion})"
                     }
-                    stackName = amazon.getStackName(env.githubRepoName, packageVersion, false, false)
 
                     startSonarQubeAnalysis {
                         repoName = globals.githubRepoName
@@ -120,48 +119,29 @@ pipeline {
                         inspectCodeResults = "ResharperInspectCodeResults"
                         logVerbose = verboseLogging
                         delegate.stageName = stageName
+                        testRunnerType = 'vstest'
                     }
 
-                    createVersionTargetsFile {
-                        serviceName = globals.solutionName
-                        version = packageVersion
-                        sha = changeset.commitSha
-                        logVerbose = verboseLogging
-                        delegate.stageName = stageName
-                        targetsFile = "version.platform.targets"
-                    }
-
-                    buildSolution {
-                        solutionFile = "${globals.solutionName}.sln"
-                        configuration = 'Release'
-                        msBuildTool = 'MSBuild 15.0'
-                        targetFramework = 'netcoreapp2.0'
-                        includeSubsystemTests = false
-                        logVerbose = verboseLogging
-                        delegate.stageName = stageName
-                    }
+                    bat """
+                        "C:\\Program Files\\dotnet\\dotnet.exe" build -c Release /p:AssemblyVersion=${packageVersion} /p:Version=${packageVersion}
+                    """
 
                     runDependencyCheck {
                         repoName = "${globals.solutionName}"
-                        binariesLocation = "src\\${globals.solutionName}\\bin\\Release"
+                        binariesLocation = "src\\${globals.solutionName}\\bin\\Release\\netstandard2.0"
                         delegate.stageName = stageName
                     }
 
-                    // Remove obj folders before running unit tests
-                    def output = bat returnStdout: true, script: "dir test\\obj /b/s"
-                    def folders = output.trim().readLines().drop(1)
-                    for (folder in folders) {
-                        bat "rmdir ${folder} /s /q"
-                    }
+                    echo "[INFO] running unit tests"
 
-                    def unitTestResults = runUnitTests {
+                    def unitTestResults = runDotnetTests{
                         title = "Unit Tests"
+                        projectToTest = "${pwd()}/test/Intelliflo.SDK.Security.Tests/Intelliflo.SDK.Security.Tests.csproj"
+                        unitTestsResultsFilename ="UnitTestResults"
                         withCoverage = true
-                        include = "IntelliFlo*Tests.dll"
-                        recurse = true
-                        unitTestsResultsFilename = "UnitTestResults"
-                        coverageInclude = globals.solutionName
                         coverageResultsFilename = "OpenCoverResults"
+                        coverageInclude = globals.solutionName
+                        pathToPdbs = "test/Intelliflo.SDK.Security.Tests/bin/Release/netcoreapp2.0"
                         logVerbose = verboseLogging
                         delegate.stageName = stageName
                     }
@@ -172,7 +152,7 @@ pipeline {
                         resultsFile = "ResharperInspectCodeResults"
                         logVerbose = verboseLogging
                         delegate.stageName = stageName
-                    }
+                    }                    
 
                     completeSonarQubeAnalysis {
                         logVerbose = verboseLogging
@@ -187,59 +167,59 @@ pipeline {
                     }
 
                     if (changeset.pullRequest != null) {
-                        nugetPack {
-                            fileSpec = "src\\*.csproj"
-                            version = packageVersion
-                            configuration = 'Release'
-                            artifactFolder = 'dist'
-                            stashPackages  = true
-                            stashName = 'package'
-                            logVerbose = verboseLogging
-                            delegate.stageName = stageName
+                        //pack for pull request
+                        bat """
+                            "C:\\Program Files\\dotnet\\dotnet.exe" pack ^
+                            -c Release ^
+                            --no-build ^
+                            -o ${pwd()}\\dist ^
+                            /p:PackageVersion=${packageVersion}
+                        """
+
+                        dir('dist') {
+                            stash includes: "*.nupkg", name: 'package'
                         }
                     }
 
-                    nugetPack {
-                        fileSpec = "src\\*.csproj"
-                        version = "${packageVersion}-alpha"
-                        configuration = 'Release'
-                        artifactFolder = 'dist'
-                        logVerbose = verboseLogging
-                        delegate.stageName = stageName
-                    }
+                    if (changeset.branch != null) { 
+                        //pack for branch
+                        bat """
+                            "C:\\Program Files\\dotnet\\dotnet.exe" pack ^
+                            -c Release ^
+                            --no-build ^
+                            -o ${pwd()}\\dist ^
+                            /p:PackageVersion=${packageVersion}-alpha
+                        """
 
-                    findAndDeleteOldPackages {
-                        credentialsId = artifactoryCredentialsId
-                        packageName = "${changeset.repoName}.${semanticVersion}"
-                        latestBuildNumber = globals.BUILD_NUMBER
-                        repos = 'nuget-local'
-                        url = artifactoryUri
-                        logVerbose = verboseLogging
-                        delegate.stageName = stageName
-                    }
+                        findAndDeleteOldPackages {
+                            credentialsId = artifactoryCredentialsId
+                            packageName = "${changeset.repoName}.${semanticVersion}"
+                            latestBuildNumber = globals.BUILD_NUMBER
+                            repos = 'nuget-local'
+                            url = artifactoryUri
+                            logVerbose = verboseLogging
+                            delegate.stageName = stageName
+                        }
 
-                    def propset = ''
-                    if (changeset.pullRequest != null) {
-                        propset = "github.pr.number=${changeset.prNumber} git.repo.name=${changeset.repoName} git.master.mergebase=${changeset.masterSha} jira.ticket=${changeset.jiraTicket}"
-                    }
-                    if (changeset.branch != null) {
-                        propset = "github.branch.name=${changeset.branchName} git.repo.name=${changeset.repoName} git.master.sha=${changeset.masterSha} jira.ticket=${changeset.jiraTicket}"
-                    }
-                    publishPackages {
-                        credentialsId = artifactoryCredentialsId
-                        repo = 'nuget-local'
-                        version = "${packageVersion}-alpha"
-                        include = "${changeset.repoName}.${packageVersion}-alpha.nupkg"
-                        uri = artifactoryUri
-                        properties = propset
-                        logVerbose = verboseLogging
-                        delegate.stageName = stageName
+                        def propset = "github.branch.name=${changeset.branchName} git.repo.name=${changeset.repoName} git.master.sha=${changeset.masterSha} jira.ticket=${changeset.jiraTicket}"
+                        
+                        publishPackages {
+                            credentialsId = artifactoryCredentialsId
+                            repo = 'nuget-local'
+                            version = "${packageVersion}-alpha"
+                            include = "${changeset.repoName}.${packageVersion}-alpha.nupkg"
+                            uri = artifactoryUri
+                            properties = propset
+                            logVerbose = verboseLogging
+                            delegate.stageName = stageName
+                        }
                     }
                 }
             }
             post {
                 always {
                     script {
+                        archive excludes: 'dist/*.zip,dist/*.nupkg,dist/*.md5', includes: 'dist/**/*.*'
                         deleteWorkspace {
                             force = true
                         }
@@ -302,13 +282,8 @@ pipeline {
                             unstash 'package'
                         }
 
-                        publishPackages {
-                            credentialsId = artifactoryCredentialsId
-                            repo = 'nuget-local'
-                            version = packageVersion
-                            include = "*.${packageVersion}.nupkg"
-                            uri = artifactoryUri
-                            properties = "github.pr.number=${changeset.prNumber} git.repo.name=${changeset.repoName} git.master.mergebase=${changeset.masterSha} jira.ticket=${changeset.jiraTicket}"
+                        publishPackageToNugetOrg {
+                            delegate.packagePath = "dist\\${globals.solutionName}.${packageVersion}.nupkg"
                             logVerbose = verboseLogging
                             delegate.stageName = stageName
                         }
