@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2024
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Intelliflo.SDK.Security", "Intelliflo.SDK.Security\Intelliflo.SDK.Security.csproj", "{874E1491-8021-40B7-B818-CF443D151488}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Intelliflo.SDK.Security", "src\Intelliflo.SDK.Security\Intelliflo.SDK.Security.csproj", "{874E1491-8021-40B7-B818-CF443D151488}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Intelliflo.SDK.Security.Tests", "Intelliflo.SDK.Security.Tests\Intelliflo.SDK.Security.Tests.csproj", "{6BF144C3-930B-4C02-B490-575853146955}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Intelliflo.SDK.Security.Tests", "test\Intelliflo.SDK.Security.Tests\Intelliflo.SDK.Security.Tests.csproj", "{6BF144C3-930B-4C02-B490-575853146955}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
