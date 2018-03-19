@@ -1,18 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using FluentAssertions;
-using Xunit;
+using NUnit.Framework;
 
 namespace Intelliflo.SDK.Security.Tests
 {
+    [TestFixture]
     public class TestSignatureProvider
     {
-        private readonly SignatureProvider underTest;
+        private SignatureProvider underTest;
         private DateTime time;
-        private readonly string secret;
-        private readonly string appId;
+        private string secret;
+        private string appId;
 
-        public TestSignatureProvider()
+        [SetUp]
+        public void SetUp()
         {
             underTest = new SignatureProvider();
             time = DateTime.UtcNow;
@@ -20,17 +22,16 @@ namespace Intelliflo.SDK.Security.Tests
             appId = "xf6tge1";
         }
 
-        [Theory]
-        [InlineData("https://intelliflo.com", "GET", "some text", 0)]
-        [InlineData("https://intelliflo.com", "POST", "some text", 0)]
-        [InlineData("https://intelliflo.com", "GET", null, 0)]
-        [InlineData("https://intelliflo.com", "GET", null, 59)]
-        [InlineData("https://intelliflo.com/", "GET", "some text", 0)]
-        [InlineData("https://intelliflo.com/go?", "GET", "some text", 0)]
-        [InlineData("https://intelliflo.com/go?x=y", "GET", "some text", 0)]
-        [InlineData("https://intelliflo.com", "gEt", "some text", 0)]
-        [InlineData("https://intelliflo.com/a/intelliflo?s=22466452&product=IP_IFLO", "GET", "some text", 0)]
-        [InlineData("https://intelliflo.com/#/intelliflo?s=22466452&product=IP_IFLO", "GET", "some text", 0)]
+        [TestCase("https://intelliflo.com", "GET", "some text", 0)]
+        [TestCase("https://intelliflo.com", "POST", "some text", 0)]
+        [TestCase("https://intelliflo.com", "GET", null, 0)]
+        [TestCase("https://intelliflo.com", "GET", null, 59)]
+        [TestCase("https://intelliflo.com/", "GET", "some text", 0)]
+        [TestCase("https://intelliflo.com/go?", "GET", "some text", 0)]
+        [TestCase("https://intelliflo.com/go?x=y", "GET", "some text", 0)]
+        [TestCase("https://intelliflo.com", "gEt", "some text", 0)]
+        [TestCase("https://intelliflo.com/a/intelliflo?s=22466452&product=IP_IFLO", "GET", "some text", 0)]
+        [TestCase("https://intelliflo.com/#/intelliflo?s=22466452&product=IP_IFLO", "GET", "some text", 0)]
         public void Can_verify_signature(string url, string method, string body, int futureSeconds)
         {
             var uri = new Uri(url);
@@ -44,7 +45,7 @@ namespace Intelliflo.SDK.Security.Tests
             underTest.Verify(signedRequest).Should().BeTrue();
         }
 
-        [Fact]
+        [Test]
         public void Can_verify_signature_with_multiple_unsigned_headers()
         {
             var uri = new Uri("https://intelliflo.com");
@@ -62,7 +63,7 @@ namespace Intelliflo.SDK.Security.Tests
             underTest.Verify(signedRequest).Should().BeTrue();
         }
 
-        [Fact]
+        [Test]
         public void Can_verify_signature_with_multiple_signed_headers()
         {
             var uri = new Uri("https://intelliflo.com");
@@ -89,13 +90,11 @@ namespace Intelliflo.SDK.Security.Tests
             underTest.Verify(signedRequest).Should().BeTrue();
         }
 
-
-        [Theory]
-        [InlineData("https://intelliflo.com,http://intelliflo.com", "GET,GET", "some text,some text", "secret,secret", 0)]
-        [InlineData("https://intelliflo.com,https://intelliflo.com", "POST,GET", "some text,some text", "secret,secret", 0)]
-        [InlineData("https://intelliflo.com,https://intelliflo.com", "GET,GET", "some text,some other text", "secret,secret", 0)]
-        [InlineData("https://intelliflo.com,https://intelliflo.com", "GET,GET", "some text,some text", "secret,secret", 61)]
-        [InlineData("https://intelliflo.com,http://intelliflo.com", "GET,GET", "some text,some text", "secret,fake", 0)]
+        [TestCase("https://intelliflo.com,http://intelliflo.com", "GET,GET", "some text,some text", "secret,secret", 0)]
+        [TestCase("https://intelliflo.com,https://intelliflo.com", "POST,GET", "some text,some text", "secret,secret", 0)]
+        [TestCase("https://intelliflo.com,https://intelliflo.com", "GET,GET", "some text,some other text", "secret,secret", 0)]
+        [TestCase("https://intelliflo.com,https://intelliflo.com", "GET,GET", "some text,some text", "secret,secret", 61)]
+        [TestCase("https://intelliflo.com,http://intelliflo.com", "GET,GET", "some text,some text", "secret,fake", 0)]
         public void Cannot_verify_signature(string url, string method, string body, string testSecret, int futureSeconds)
         {
             var uri = new Uri(First(url));
@@ -111,8 +110,8 @@ namespace Intelliflo.SDK.Security.Tests
             underTest.Verify(signedRequest).Should().BeFalse();
         }
 
-        [Theory]
-        [MemberData(nameof(CreateTestCases))]
+        [Test]
+        [TestCaseSource(nameof(CreateTestCases))]
         public void Sign_Should_Produse_Expected_Urls(SignatureRequest request, string expectedResult)
         {
             var signature = new SignatureProvider().Sign(request);
