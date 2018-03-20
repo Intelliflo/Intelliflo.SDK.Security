@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using FluentAssertions;
-using Intelliflo.SDK.Security.Utils;
 using NUnit.Framework;
 
-namespace Intelliflo.SDK.Security.Tests.Utils
+namespace Intelliflo.SDK.Security.Tests
 {
     public class TestCanonicalStringBuider
     {
-        private CanonicalStringBuider underTest;
+        private SignatureProvider.CanonicalStringBuider underTest;
         private SignatureRequest request;
 
         [SetUp]
@@ -16,7 +15,7 @@ namespace Intelliflo.SDK.Security.Tests.Utils
         {
             request = new SignatureRequest();
 
-            underTest = new CanonicalStringBuider();
+            underTest = new SignatureProvider.CanonicalStringBuider();
         }
 
         [TestCase("test", "test")]

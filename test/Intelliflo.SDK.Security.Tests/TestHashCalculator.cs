@@ -1,17 +1,16 @@
 ﻿using FluentAssertions;
-using Intelliflo.SDK.Security.Utils;
 using NUnit.Framework;
 
-namespace Intelliflo.SDK.Security.Tests.Utils
+namespace Intelliflo.SDK.Security.Tests
 {
     public class TestHashCalculator
     {
-        private HashCalculator underTest;
+        private SignatureProvider.HashCalculator underTest;
 
         [SetUp]
         public void SetUp()
         {
-            underTest = new HashCalculator();
+            underTest = new SignatureProvider.HashCalculator();
         }
 
         [TestCase("xx", "aa", "wabuae4aeabbac8aygbqadcauwbzahqauqb6afeargbfaeiawgbyag0aoaa5afmatgbhaeyazga5agwayqarahaatwbyafaargb3aewaygbyahiaywa9aa==")]
