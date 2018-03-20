@@ -1,12 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web;
+using Intelliflo.SDK.Security.Algorithms;
 using Intelliflo.SDK.Security.Utils;
 
 namespace Intelliflo.SDK.Security
 {
     public sealed class SignatureRequest
     {
+        internal const string AlgorithmKey = "x-iflo-Algorithm";
+        internal const string CredentialKey = "x-iflo-Credential";
+        internal const string DateKey = "x-iflo-Date";
+        internal const string ExpiresKey = "x-iflo-Expires";
+        internal const string SignedHeadersKey = "x-iflo-SignedHeaders";
+        internal const string SignatureKey = "x-iflo-Signature";
+
         public string Secret { get; set; }
         public string Method { get; set; }
         public Uri Url { get; set; }
@@ -28,7 +36,7 @@ namespace Intelliflo.SDK.Security
             string method = "GET",
             string body = null,
             int expirySeconds = 60,
-            string algorith = "IO1-HMAC-SHA256")
+            string algorithm = Io1HmacSha256SigningAlgorithm.AlgorithmName)
         {
             if (string.IsNullOrEmpty(secret))
                 throw new ArgumentException("May not be null or empty", nameof(secret));
@@ -54,7 +62,7 @@ namespace Intelliflo.SDK.Security
                 Credential = credential,
                 Timestamp = timeStamp,
                 ExpirySeconds = expirySeconds,
-                Algorithm = algorith,
+                Algorithm = algorithm,
                 SignedHeaders = new List<string> { "Host" }
             };
         }
@@ -81,12 +89,12 @@ namespace Intelliflo.SDK.Security
 
             var request = CreateSignRequest(
                 url,
-                parts[SignatureProvider.DateKey]?.FromIso8601Format() ?? DateTime.MinValue,
-                parts[SignatureProvider.CredentialKey],
+                parts[DateKey]?.FromIso8601Format() ?? DateTime.MinValue,
+                parts[CredentialKey],
                 secret,
                 method,
                 body,
-                int.Parse(parts[SignatureProvider.ExpiresKey] ?? "-1")
+                int.Parse(parts[ExpiresKey] ?? "-1")
             );
 
 
@@ -94,8 +102,8 @@ namespace Intelliflo.SDK.Security
                 request.Headers = headers;
 
             request.CurrentTime = currentTime;
-            request.Signature = parts[SignatureProvider.SignatureKey];
-            request.Algorithm = parts[SignatureProvider.AlgorithmKey];
+            request.Signature = parts[SignatureKey];
+            request.Algorithm = parts[AlgorithmKey];
 
             return request;
         }

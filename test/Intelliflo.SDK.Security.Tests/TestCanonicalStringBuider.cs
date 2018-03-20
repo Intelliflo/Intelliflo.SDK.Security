@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using FluentAssertions;
+using Intelliflo.SDK.Security.Algorithms;
 using NUnit.Framework;
 
 namespace Intelliflo.SDK.Security.Tests
 {
     public class TestCanonicalStringBuider
     {
-        private SignatureProvider.CanonicalStringBuider underTest;
+        private Io1HmacSha256SigningAlgorithm.CanonicalStringBuider underTest;
         private SignatureRequest request;
 
         [SetUp]
@@ -15,7 +16,7 @@ namespace Intelliflo.SDK.Security.Tests
         {
             request = new SignatureRequest();
 
-            underTest = new SignatureProvider.CanonicalStringBuider();
+            underTest = new Io1HmacSha256SigningAlgorithm.CanonicalStringBuider();
         }
 
         [TestCase("test", "test")]
