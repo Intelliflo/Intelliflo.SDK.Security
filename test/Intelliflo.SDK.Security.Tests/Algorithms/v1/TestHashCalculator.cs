@@ -2,7 +2,7 @@
 using Intelliflo.SDK.Security.Algorithms;
 using NUnit.Framework;
 
-namespace Intelliflo.SDK.Security.Tests
+namespace Intelliflo.SDK.Security.Tests.Algorithms.v1
 {
     public class TestHashCalculator
     {

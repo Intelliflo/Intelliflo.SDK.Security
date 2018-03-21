@@ -67,7 +67,7 @@ namespace Intelliflo.SDK.Security.Algorithms
 
             urlBuilder.AddQueryParam(SignatureRequest.SignatureKey, signature);
 
-            return urlBuilder.ToUri();
+            return urlBuilder.ToUri(true);
         }
 
         private string BuildStringToSign(SignatureRequest arg)
@@ -108,9 +108,9 @@ namespace Intelliflo.SDK.Security.Algorithms
                 if (secret == null)
                     throw new ArgumentNullException(nameof(secret));
 
-                using (var hmac = new HMACSHA256(Encoding.Unicode.GetBytes(secret)))
+                using (var hmac = new HMACSHA256(DefaultEncoding.GetBytes(secret)))
                 {
-                    return ToLowerBase64(
+                    return ToHex(
                         hmac.ComputeHash(
                             DefaultEncoding.GetBytes(value)));
                 }
@@ -125,7 +125,7 @@ namespace Intelliflo.SDK.Security.Algorithms
                 {
                     var bytes = DefaultEncoding.GetBytes(canonicalRequest);
 
-                    return ToLowerBase64(
+                    return ToHex(
                         sha256.ComputeHash(
                             bytes, 
                             0,
@@ -133,12 +133,19 @@ namespace Intelliflo.SDK.Security.Algorithms
                 }
             }
 
-            private static string ToLowerBase64(byte[] str)
+            private static string ToHex(byte[] data, bool lowercase = true)
             {
-                if (str == null)
-                    throw new ArgumentNullException(nameof(str));
+                if (data == null)
+                    throw new ArgumentNullException(nameof(data));
 
-                return Convert.ToBase64String(str).ToLower();
+                var sb = new StringBuilder();
+
+                for (var i = 0; i < data.Length; i++)
+                {
+                    sb.Append(data[i].ToString(lowercase ? "x2" : "X2", CultureInfo.InvariantCulture));
+                }
+
+                return sb.ToString();
             }
         }
 
