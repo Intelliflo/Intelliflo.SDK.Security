@@ -101,7 +101,6 @@ namespace Intelliflo.SDK.Security.Algorithms
         {
             private static readonly Encoding DefaultEncoding = Encoding.Unicode;
 
-
             public string GetStringToSignHash(string value, string secret)
             {
                 if (value == null)
@@ -109,7 +108,12 @@ namespace Intelliflo.SDK.Security.Algorithms
                 if (secret == null)
                     throw new ArgumentNullException(nameof(secret));
 
-                return ToLowerBase64(ToHmacsha256Hash(value, secret));
+                using (var hmac = new HMACSHA256(Encoding.Unicode.GetBytes(secret)))
+                {
+                    return ToLowerBase64(
+                        hmac.ComputeHash(
+                            DefaultEncoding.GetBytes(value)));
+                }
             }
 
             public string GetCanonicalRequestHash(string canonicalRequest)
@@ -117,51 +121,25 @@ namespace Intelliflo.SDK.Security.Algorithms
                 if (canonicalRequest == null)
                     throw new ArgumentNullException(nameof(canonicalRequest));
 
-                return ToLowerBase64(ToSha256Hash(canonicalRequest));
-            }
-
-            private static string ToSha256Hash(string str)
-            {
-                if (string.IsNullOrEmpty(str))
-                    throw new ArgumentNullException(nameof(str));
-
                 using (var sha256 = new SHA256Managed())
                 {
-                    var hash = new StringBuilder();
+                    var bytes = DefaultEncoding.GetBytes(canonicalRequest);
 
-                    foreach (var b in sha256.ComputeHash(DefaultEncoding.GetBytes(str), 0, DefaultEncoding.GetByteCount(str)))
-                    {
-                        hash.Append(b.ToString("x2"));
-                    }
-
-                    return hash.ToString();
+                    return ToLowerBase64(
+                        sha256.ComputeHash(
+                            bytes, 
+                            0,
+                            bytes.Length));
                 }
             }
 
-            private static string ToHmacsha256Hash(string str, string secret)
+            private static string ToLowerBase64(byte[] str)
             {
-                if (string.IsNullOrEmpty(str))
-                    throw new ArgumentNullException(nameof(str));
-                if (string.IsNullOrEmpty(secret))
-                    throw new ArgumentNullException(nameof(secret));
-
-                using (var hmac = new HMACSHA256(Encoding.Unicode.GetBytes(secret)))
-                {
-                    return Convert.ToBase64String(
-                        hmac.ComputeHash(
-                            DefaultEncoding.GetBytes(str)));
-                }
-            }
-
-
-            private static string ToLowerBase64(string str)
-            {
-                if (string.IsNullOrEmpty(str))
+                if (str == null)
                     throw new ArgumentNullException(nameof(str));
 
-                return Convert.ToBase64String(DefaultEncoding.GetBytes(str)).ToLower();
+                return Convert.ToBase64String(str).ToLower();
             }
-
         }
 
         internal sealed class CanonicalStringBuider
