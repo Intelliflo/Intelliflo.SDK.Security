@@ -99,7 +99,7 @@ namespace Intelliflo.SDK.Security.Algorithms
 
         internal sealed class HashCalculator
         {
-            private static readonly Encoding DefaultEncoding = Encoding.Unicode;
+            private static readonly Encoding DefaultEncoding = Encoding.UTF8;
 
             public string GetStringToSignHash(string value, string secret)
             {

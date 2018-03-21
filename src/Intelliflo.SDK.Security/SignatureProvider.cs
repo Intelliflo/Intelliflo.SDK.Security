@@ -8,7 +8,8 @@ namespace Intelliflo.SDK.Security
     {
         private static readonly Dictionary<string, ISigningAlgorithm> SupportedAlgorithms = new Dictionary<string, ISigningAlgorithm>(StringComparer.OrdinalIgnoreCase)
         {
-            [Io1HmacSha256SigningAlgorithm.AlgorithmName] = new Io1HmacSha256SigningAlgorithm()
+            [Io1HmacSha256SigningAlgorithm.AlgorithmName] = new Io1HmacSha256SigningAlgorithm(),
+            [Io2HmacSha256SigningAlgorithm.AlgorithmName] = new Io2HmacSha256SigningAlgorithm()
         };
 
         public bool Verify(SignatureRequest arg)
