@@ -24,7 +24,7 @@ namespace Intelliflo.SDK.Security.Utils
             queryValues.Add(new KeyValuePair<string, string>(paramName, value));
         }
 
-        public Uri ToUri()
+        public Uri ToUri(bool encodeParameters = false)
         {
             if (queryValues.Count == 0)
                 return new Uri(absoluteUri);
@@ -48,7 +48,16 @@ namespace Intelliflo.SDK.Security.Utils
                 if (i > 0)
                     builder.Append("&");
 
-                builder.Append(queryValues[i].Key + "=" + queryValues[i].Value);
+                var key = queryValues[i].Key;
+                var value = queryValues[i].Value;
+
+                if (encodeParameters)
+                {
+                    key = key.UriEncode(true);
+                    value = value.UriEncode(true);
+                }
+
+                builder.Append(key + "=" + value);
             }
 
             return new Uri(builder.ToString());
