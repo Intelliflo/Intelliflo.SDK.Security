@@ -20,6 +20,8 @@ namespace Intelliflo.SDK.Security
         public Uri Url { get; set; }
         public IDictionary<string, string> Headers { get; set; }
         public ICollection<string> SignedHeaders { get; set; }
+
+        [Obsolete("This property is not included into query string in latest versionf of signing algorithm. Only v1 algorithm includes this value into query string")]
         public int ExpirySeconds { get; set; }
         public string Body { get; set; }
         public string Credential { get; set; }
@@ -93,10 +95,8 @@ namespace Intelliflo.SDK.Security
                 parts[CredentialKey],
                 secret,
                 method,
-                body,
-                int.Parse(parts[ExpiresKey] ?? "-1")
+                body
             );
-
 
             if (headers != null)
                 request.Headers = headers;

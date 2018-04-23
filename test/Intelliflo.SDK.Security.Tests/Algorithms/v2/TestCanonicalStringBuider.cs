@@ -29,16 +29,6 @@ namespace Intelliflo.SDK.Security.Tests.Algorithms.v2
             underTest.BuildCredentials(request).Should().Be(expectedResult);
         }
 
-        [TestCase(1, "1")]
-        [TestCase(1000, "1000")]
-        [TestCase(1000000, "1000000")]
-        public void BuildExpirySeconds_Should_Return_String_Representation_Of_ExpirySeconds(int value, string expectedResult)
-        {
-            request.ExpirySeconds = value;
-
-            underTest.BuildExpirySeconds(request).Should().Be(expectedResult);
-        }
-
         [Test]
         [TestCaseSource(nameof(CreateSignedHeadersTests))]
         public void BuildSignedHeaders_Should_Convet_Headers_Into_Lower_Case_And_Join_Them_Sorting_By_Name(string[] headers, string expectedResult)
