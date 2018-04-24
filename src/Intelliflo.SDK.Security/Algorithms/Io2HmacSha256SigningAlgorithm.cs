@@ -57,7 +57,6 @@ namespace Intelliflo.SDK.Security.Algorithms
             urlBuilder.AddQueryParam(SignatureRequest.AlgorithmKey, canonicalStringBuider.BuildAlgorithm(arg));
             urlBuilder.AddQueryParam(SignatureRequest.CredentialKey, canonicalStringBuider.BuildCredentials(arg));
             urlBuilder.AddQueryParam(SignatureRequest.DateKey, canonicalStringBuider.BuildTimestamp(arg));
-            urlBuilder.AddQueryParam(SignatureRequest.ExpiresKey, canonicalStringBuider.BuildExpirySeconds(arg));
             urlBuilder.AddQueryParam(SignatureRequest.SignedHeadersKey, canonicalStringBuider.BuildSignedHeaders(arg));
 
             var stringToSign = BuildStringToSign(arg);
@@ -157,14 +156,6 @@ namespace Intelliflo.SDK.Security.Algorithms
                     throw new ArgumentNullException(nameof(arg));
 
                 return arg.Credential;
-            }
-
-            public string BuildExpirySeconds(SignatureRequest arg)
-            {
-                if (arg == null)
-                    throw new ArgumentNullException(nameof(arg));
-
-                return arg.ExpirySeconds.ToString(CultureInfo.InvariantCulture);
             }
 
             public string BuildSignedHeaders(SignatureRequest arg)

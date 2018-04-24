@@ -40,7 +40,7 @@ namespace Intelliflo.SDK.Security.Tests
 
             var signedUrl = underTest.Sign(unsignedRequest);
 
-            var signedRequest = SignatureRequest.CreateVerificationRequest(signedUrl, time.AddSeconds(futureSeconds), secret, method, body);
+            var signedRequest = SignatureRequest.CreateVerificationRequest(signedUrl, time.AddSeconds(futureSeconds), secret, method, 60, body);
 
             underTest.Verify(signedRequest).Should().BeTrue();
         }
@@ -64,7 +64,7 @@ namespace Intelliflo.SDK.Security.Tests
 
             var signedUrl = underTest.Sign(unsignedRequest);
 
-            var signedRequest = SignatureRequest.CreateVerificationRequest(signedUrl, time.AddSeconds(futureSeconds), secret, method, body);
+            var signedRequest = SignatureRequest.CreateVerificationRequest(signedUrl, time.AddSeconds(futureSeconds), secret, method, 60, body);
 
             underTest.Verify(signedRequest).Should().BeTrue();
         }
@@ -82,7 +82,7 @@ namespace Intelliflo.SDK.Security.Tests
 
             var signedUrl = underTest.Sign(unsignedRequest);
 
-            var signedRequest = SignatureRequest.CreateVerificationRequest(signedUrl, time.AddSeconds(1), secret, method, body, unsignedRequest.Headers);
+            var signedRequest = SignatureRequest.CreateVerificationRequest(signedUrl, time.AddSeconds(1), secret, method, 60, body, unsignedRequest.Headers);
 
             underTest.Verify(signedRequest).Should().BeTrue();
         }
@@ -103,7 +103,7 @@ namespace Intelliflo.SDK.Security.Tests
 
             var signedUrl = underTest.Sign(unsignedRequest);
 
-            var signedRequest = SignatureRequest.CreateVerificationRequest(signedUrl, time.AddSeconds(1), secret, method, body, unsignedRequest.Headers);
+            var signedRequest = SignatureRequest.CreateVerificationRequest(signedUrl, time.AddSeconds(1), secret, method, 60, body, unsignedRequest.Headers);
             signedRequest.SignedHeaders.Clear();
 
             foreach (var header in unsignedRequest.SignedHeaders)
@@ -129,7 +129,7 @@ namespace Intelliflo.SDK.Security.Tests
 
             signedUrl = new Uri(signedUrl.AbsoluteUri.Replace(First(url), Second(url)));
 
-            var signedRequest = SignatureRequest.CreateVerificationRequest(signedUrl, time.AddSeconds(futureSeconds), testSecret, Second(method), Second(body));
+            var signedRequest = SignatureRequest.CreateVerificationRequest(signedUrl, time.AddSeconds(futureSeconds), testSecret, Second(method), 60, Second(body));
 
             underTest.Verify(signedRequest).Should().BeFalse();
         }
@@ -196,7 +196,7 @@ namespace Intelliflo.SDK.Security.Tests
                         null,
                         900,
                         "IO2-HMAC-SHA256"),
-                "http://development.matrix.local.co.uk/Pages/Account/IOAppInstall.aspx?event=before_appinstall&ioUserID=81960&ioAppID=fbd9844&ioReturnUrl=https://uat-apps.intelligent-office.net/preview-apps/fbd9844/install/preview?token=fbd9844-1518435999701&x-iflo-Algorithm=IO2-HMAC-SHA256&x-iflo-Credential=xxx&x-iflo-Date=20180222T114639Z&x-iflo-Expires=900&x-iflo-SignedHeaders=host&x-iflo-Signature=52ca5b4b18373eb2d255eb9ee68bc8968a0ace9d69b8870c4aed37dd1bc2e7c3"
+                "http://development.matrix.local.co.uk/Pages/Account/IOAppInstall.aspx?event=before_appinstall&ioUserID=81960&ioAppID=fbd9844&ioReturnUrl=https://uat-apps.intelligent-office.net/preview-apps/fbd9844/install/preview?token=fbd9844-1518435999701&x-iflo-Algorithm=IO2-HMAC-SHA256&x-iflo-Credential=xxx&x-iflo-Date=20180222T114639Z&x-iflo-SignedHeaders=host&x-iflo-Signature=52ca5b4b18373eb2d255eb9ee68bc8968a0ace9d69b8870c4aed37dd1bc2e7c3"
             };
 
             yield return new object[]
@@ -208,7 +208,7 @@ namespace Intelliflo.SDK.Security.Tests
                                 "aaa",
                                 "fbd9844",
                                 algorithm:"IO2-HMAC-SHA256"),
-                            "http://development.matrix.local.co.uk/Pages/Account/IOAppInstall.aspx?event=before_appinstall&ioUserID=81960&ioAppID=fbd9844&ioReturnUrl=https:%2F%2Fuat-apps.intelligent-office.net%2Fpreview-apps%2Ffbd9844%2Finstall%2Fpreview%3Ftoken%3Dfbd9844-1518435999701&x-iflo-Algorithm=IO2-HMAC-SHA256&x-iflo-Credential=aaa&x-iflo-Date=20190222T114639Z&x-iflo-Expires=60&x-iflo-SignedHeaders=host&x-iflo-Signature=1e8504d60c37391426e233818b9f2cd7dde4f2bd6e3719609103d09d28f30db6"
+                            "http://development.matrix.local.co.uk/Pages/Account/IOAppInstall.aspx?event=before_appinstall&ioUserID=81960&ioAppID=fbd9844&ioReturnUrl=https:%2F%2Fuat-apps.intelligent-office.net%2Fpreview-apps%2Ffbd9844%2Finstall%2Fpreview%3Ftoken%3Dfbd9844-1518435999701&x-iflo-Algorithm=IO2-HMAC-SHA256&x-iflo-Credential=aaa&x-iflo-Date=20190222T114639Z&x-iflo-SignedHeaders=host&x-iflo-Signature=1e8504d60c37391426e233818b9f2cd7dde4f2bd6e3719609103d09d28f30db6"
             };
 
             yield return new object[]
@@ -223,10 +223,23 @@ namespace Intelliflo.SDK.Security.Tests
                     null,
                     900,
                     "IO2-HMAC-SHA256"),
-                "http://dragon.local.co.uk/Pages/Account/IOAppInstall.aspx?event=before_appinstall&ioUserID=81960&ioAppID=fbd9844&ioReturnUrl=https://uat-apps.intelligent-office.net/preview-apps/fbd9844/install/preview?token=fbd9844-1518435999701&x-iflo-Algorithm=IO2-HMAC-SHA256&x-iflo-Credential=xxx&x-iflo-Date=20180222T114639Z&x-iflo-Expires=900&x-iflo-SignedHeaders=host&x-iflo-Signature=8cc267d46588af28dab6404eaa0e92986895ea21d3a369f3496634b92ad1921a"
+                "http://dragon.local.co.uk/Pages/Account/IOAppInstall.aspx?event=before_appinstall&ioUserID=81960&ioAppID=fbd9844&ioReturnUrl=https://uat-apps.intelligent-office.net/preview-apps/fbd9844/install/preview?token=fbd9844-1518435999701&x-iflo-Algorithm=IO2-HMAC-SHA256&x-iflo-Credential=xxx&x-iflo-Date=20180222T114639Z&x-iflo-SignedHeaders=host&x-iflo-Signature=8cc267d46588af28dab6404eaa0e92986895ea21d3a369f3496634b92ad1921a"
             };
 
-
+            yield return new object[]
+            {
+                SignatureRequest.CreateSignRequest(
+                    new Uri(
+                        "https://developer.intelliflo.com/docs/Pre-SignedURLs?x=y&foo=bar"),
+                    new DateTime(2018, 2, 22, 11, 46, 39, DateTimeKind.Utc),
+                    "myCredential",
+                    "mySecret",
+                    "GET",
+                    null,
+                    900,
+                    "IO2-HMAC-SHA256"),
+                "https://developer.intelliflo.com/docs/Pre-SignedURLs?x=y&foo=bar&x-iflo-Algorithm=IO2-HMAC-SHA256&x-iflo-Credential=myCredential&x-iflo-Date=20180222T114639Z&x-iflo-SignedHeaders=host&x-iflo-Signature=7664790e62b988b01ebff76716cd5c6c651cc6b0ba350c7b6be29278f347a77e"
+            };
         }
 
         private static string First(string str)

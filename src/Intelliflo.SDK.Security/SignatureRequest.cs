@@ -72,6 +72,7 @@ namespace Intelliflo.SDK.Security
             DateTime currentTime,
             string secret,
             string method,
+            int expirySeconds = 60,
             string body = null,
             IDictionary<string, string> headers = null)
         {
@@ -83,6 +84,8 @@ namespace Intelliflo.SDK.Security
                 throw new ArgumentNullException(nameof(url));
             if (!url.IsAbsoluteUri)
                 throw new ArgumentException("Must be absolute Uri", nameof(url));
+            if (expirySeconds <= 0)
+                throw new ArgumentOutOfRangeException(nameof(expirySeconds));
 
             var query = url.GetQuery();
             var parts = HttpUtility.ParseQueryString(query);
@@ -94,9 +97,8 @@ namespace Intelliflo.SDK.Security
                 secret,
                 method,
                 body,
-                int.Parse(parts[ExpiresKey] ?? "-1")
+                expirySeconds
             );
-
 
             if (headers != null)
                 request.Headers = headers;
