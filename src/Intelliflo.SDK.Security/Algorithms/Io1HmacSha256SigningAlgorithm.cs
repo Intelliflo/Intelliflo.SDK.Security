@@ -27,14 +27,14 @@ namespace Intelliflo.SDK.Security.Algorithms
             this.hashCalculator = hashCalculator ?? throw new ArgumentNullException(nameof(hashCalculator));
         }
 
-        public bool Verify(SignatureRequest arg, int expirySeconds = 60)
+        public bool Verify(SignatureRequest arg)
         {
             if (arg == null)
                 throw new ArgumentNullException(nameof(arg));
             if (!arg.Algorithm.Equals(AlgorithmName, StringComparison.OrdinalIgnoreCase))
                 throw new ArgumentException($"Algorithm \"{arg.Algorithm}\" is not supported", nameof(arg));
 
-            if (arg.CurrentTime > arg.Timestamp.AddSeconds(expirySeconds))
+            if (arg.CurrentTime > arg.Timestamp.AddSeconds(arg.ExpirySeconds))
                 return false;
 
             var stringToSign = BuildStringToSign(arg);

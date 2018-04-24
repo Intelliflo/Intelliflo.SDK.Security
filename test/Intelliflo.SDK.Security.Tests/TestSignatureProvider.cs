@@ -40,7 +40,7 @@ namespace Intelliflo.SDK.Security.Tests
 
             var signedUrl = underTest.Sign(unsignedRequest);
 
-            var signedRequest = SignatureRequest.CreateVerificationRequest(signedUrl, time.AddSeconds(futureSeconds), secret, method, body);
+            var signedRequest = SignatureRequest.CreateVerificationRequest(signedUrl, time.AddSeconds(futureSeconds), secret, method, 60, body);
 
             underTest.Verify(signedRequest).Should().BeTrue();
         }
@@ -64,7 +64,7 @@ namespace Intelliflo.SDK.Security.Tests
 
             var signedUrl = underTest.Sign(unsignedRequest);
 
-            var signedRequest = SignatureRequest.CreateVerificationRequest(signedUrl, time.AddSeconds(futureSeconds), secret, method, body);
+            var signedRequest = SignatureRequest.CreateVerificationRequest(signedUrl, time.AddSeconds(futureSeconds), secret, method, 60, body);
 
             underTest.Verify(signedRequest).Should().BeTrue();
         }
@@ -82,7 +82,7 @@ namespace Intelliflo.SDK.Security.Tests
 
             var signedUrl = underTest.Sign(unsignedRequest);
 
-            var signedRequest = SignatureRequest.CreateVerificationRequest(signedUrl, time.AddSeconds(1), secret, method, body, unsignedRequest.Headers);
+            var signedRequest = SignatureRequest.CreateVerificationRequest(signedUrl, time.AddSeconds(1), secret, method, 60, body, unsignedRequest.Headers);
 
             underTest.Verify(signedRequest).Should().BeTrue();
         }
@@ -103,7 +103,7 @@ namespace Intelliflo.SDK.Security.Tests
 
             var signedUrl = underTest.Sign(unsignedRequest);
 
-            var signedRequest = SignatureRequest.CreateVerificationRequest(signedUrl, time.AddSeconds(1), secret, method, body, unsignedRequest.Headers);
+            var signedRequest = SignatureRequest.CreateVerificationRequest(signedUrl, time.AddSeconds(1), secret, method, 60, body, unsignedRequest.Headers);
             signedRequest.SignedHeaders.Clear();
 
             foreach (var header in unsignedRequest.SignedHeaders)
@@ -129,7 +129,7 @@ namespace Intelliflo.SDK.Security.Tests
 
             signedUrl = new Uri(signedUrl.AbsoluteUri.Replace(First(url), Second(url)));
 
-            var signedRequest = SignatureRequest.CreateVerificationRequest(signedUrl, time.AddSeconds(futureSeconds), testSecret, Second(method), Second(body));
+            var signedRequest = SignatureRequest.CreateVerificationRequest(signedUrl, time.AddSeconds(futureSeconds), testSecret, Second(method), 60, Second(body));
 
             underTest.Verify(signedRequest).Should().BeFalse();
         }

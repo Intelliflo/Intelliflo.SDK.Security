@@ -105,7 +105,7 @@ namespace Intelliflo.SDK.Security.Tests
                     CurrentTime = new DateTime(2013, 5, 23, 10, 11, 13),
                     Url = new Uri("http://dragon.local.co.uk/Pages/Account/IOAppInstall.aspx?event=before_appinstall&ioUserID=81960&ioAppID=fbd9844&ioReturnUrl=https://uat-apps.intelligent-office.net/preview-apps/fbd9844/install/preview?token=fbd9844-1518435999701&x-iflo-Algorithm=IO1-HMAC-SHA256&x-iflo-Credential=xxx&x-iflo-Date=20180222T114639Z&x-iflo-Expires=900&x-iflo-SignedHeaders=host&x-iflo-Signature=taa0agcaugbwaeyamqb0afoavga1ahuavabnahaavwbvaesasgbrafkaawbtaegangbyafeamqbhaegazaa4aeuadab6aheaqgbladeaaqbqadaacwa9aa=="),
                     Method = "POST",
-                    ExpirySeconds = 60, // This value is no longer taken from query string
+                    ExpirySeconds = 60,
                     SignedHeaders = new List<string>
                     {
                         "Host"
@@ -124,6 +124,7 @@ namespace Intelliflo.SDK.Security.Tests
                 new DateTime(2013, 5, 23, 10, 11, 13, DateTimeKind.Utc),
                 "secret1",
                 "POST",
+                999,
                 "body1",
                 new Dictionary<string, string>
                 {
@@ -145,7 +146,7 @@ namespace Intelliflo.SDK.Security.Tests
                     CurrentTime = new DateTime(2013, 5, 23, 10, 11, 13),
                     Url = new Uri("http://dragon.local.co.uk/Pages/Account/IOAppInstall.aspx?event=before_appinstall&ioUserID=81960&ioAppID=fbd9844&ioReturnUrl=https://uat-apps.intelligent-office.net/preview-apps/fbd9844/install/preview?token=fbd9844-1518435999701&x-iflo-Algorithm=IO1-HMAC-SHA256&x-iflo-Credential=xxx&x-iflo-Date=20180222T114639Z&x-iflo-Expires=900&x-iflo-SignedHeaders=host&x-iflo-Signature=taa0agcaugbwaeyamqb0afoavga1ahuavabnahaavwbvaesasgbrafkaawbtaegangbyafeamqbhaegazaa4aeuadab6aheaqgbladeaaqbqadaacwa9aa=="),
                     Method = "POST",
-                    ExpirySeconds = 60, // Value is not taken from query string
+                    ExpirySeconds = 999,
                     SignedHeaders = new List<string>
                     {
                         "Host"

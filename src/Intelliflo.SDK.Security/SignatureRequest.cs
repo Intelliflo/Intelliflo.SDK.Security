@@ -20,8 +20,6 @@ namespace Intelliflo.SDK.Security
         public Uri Url { get; set; }
         public IDictionary<string, string> Headers { get; set; }
         public ICollection<string> SignedHeaders { get; set; }
-
-        [Obsolete("This property is not included into query string in latest versionf of signing algorithm. Only v1 algorithm includes this value into query string")]
         public int ExpirySeconds { get; set; }
         public string Body { get; set; }
         public string Credential { get; set; }
@@ -74,6 +72,7 @@ namespace Intelliflo.SDK.Security
             DateTime currentTime,
             string secret,
             string method,
+            int expirySeconds = 60,
             string body = null,
             IDictionary<string, string> headers = null)
         {
@@ -85,6 +84,8 @@ namespace Intelliflo.SDK.Security
                 throw new ArgumentNullException(nameof(url));
             if (!url.IsAbsoluteUri)
                 throw new ArgumentException("Must be absolute Uri", nameof(url));
+            if (expirySeconds <= 0)
+                throw new ArgumentOutOfRangeException(nameof(expirySeconds));
 
             var query = url.GetQuery();
             var parts = HttpUtility.ParseQueryString(query);
@@ -95,7 +96,8 @@ namespace Intelliflo.SDK.Security
                 parts[CredentialKey],
                 secret,
                 method,
-                body
+                body,
+                expirySeconds
             );
 
             if (headers != null)
