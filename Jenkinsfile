@@ -6,13 +6,12 @@
 /**
  * By default the master branch of the library is loaded
  * Use the include directive below ONLY if you need to load a branch of the library
- * @Library('intellifloworkflow@IP-34341')
+ * @Library('intellifloworkflow@IP-37584')
  */
-
 import org.intelliflo.*
 
 def changeset = new Changeset()
-def amazon = new Amazon()
+PipelineConfig pipelineConfig
 
 def artifactoryCredentialsId = 'a3c63f46-4be7-48cc-869b-4239a869cbe8'
 def artifactoryUri = 'https://artifactory.intelliflo.io/artifactory'
@@ -24,7 +23,8 @@ def semanticVersion
 def packageVersion
 def globals = env
 def verboseLogging = false
-def nodeLabel = 'devops'
+def windowsNode = 'windows'
+
 pipeline {
 
     agent none
@@ -60,7 +60,7 @@ pipeline {
 
         stage('Component') {
             agent {
-                label nodeLabel
+                label windowsNode
             }
             steps {
                 bat 'set'
@@ -71,6 +71,7 @@ pipeline {
                     // Analyse and validate the changeset
                     validateChangeset {
                         repoName = globals.githubRepoName
+                        solutionName = globals.solutionName
                         prNumber = globals.CHANGE_ID
                         baseBranch = globals.CHANGE_TARGET
                         branchName = globals.BRANCH_NAME
@@ -87,6 +88,10 @@ pipeline {
                         delegate.stageName = stageName
                     }
 
+                    pipelineConfig = getPipelineConfig {
+                        configFile = "Jenkinsfile-config.yml"
+                    }
+
                     // Scripts required by the pipeline
                     unstashResourceFiles {
                         folder = 'pipeline'
@@ -101,12 +106,12 @@ pipeline {
                         abortOnFailure = true
                     }
 
-                    semanticVersion = Consul.getStoreValue(ConsulKey.get(env.githubRepoName, env.BRANCH_NAME, globals.CHANGE_ID, 'existing.version'))
-                    packageVersion = "${semanticVersion}.${env.BUILD_NUMBER}"
+                    semanticVersion = Consul.getStoreValue(ConsulKey.get(globals.githubRepoName, globals.BRANCH_NAME, globals.CHANGE_ID, 'existing.version'))
+                    packageVersion = "${semanticVersion}.${globals.BUILD_NUMBER}"
                     if (changeset.pullRequest != null) {
-                        currentBuild.displayName = "${githubRepoName}.Pr${changeset.prNumber}(${packageVersion})"
+                        currentBuild.displayName = "${globals.githubRepoName}.Pr${changeset.prNumber}(${packageVersion})"
                     } else {
-                        currentBuild.displayName = "${githubRepoName}(${packageVersion})"
+                        currentBuild.displayName = "${globals.githubRepoName}(${packageVersion})"
                     }
 
                     startSonarQubeAnalysis {
@@ -122,9 +127,12 @@ pipeline {
                         testRunnerType = 'vstest'
                     }
 
-                    bat """
-                        "C:\\Program Files\\dotnet\\dotnet.exe" build -c Release /p:AssemblyVersion=${packageVersion} /p:Version=${packageVersion}
-                    """
+                    buildCode {
+                        delegate.stageName = stageName
+                        delegate.pipelineConfig = pipelineConfig
+                        delegate.packageVersion = packageVersion
+                        delegate.changeset = changeset
+                    }
 
                     runDependencyCheck {
                         repoName = "${globals.solutionName}"
@@ -132,16 +140,14 @@ pipeline {
                         delegate.stageName = stageName
                     }
 
-                    echo "[INFO] running unit tests"
-
                     def unitTestResults = runDotnetTests{
                         title = "Unit Tests"
-                        projectToTest = "${pwd()}/test/Intelliflo.SDK.Security.Tests/Intelliflo.SDK.Security.Tests.csproj"
+                        projectToTest = "${pwd()}/test/${globals.githubRepoName}.Tests/${globals.githubRepoName}.Tests.csproj"
                         unitTestsResultsFilename ="UnitTestResults"
                         withCoverage = true
                         coverageResultsFilename = "OpenCoverResults"
                         coverageInclude = globals.solutionName
-                        pathToPdbs = "test/Intelliflo.SDK.Security.Tests/bin/Release/netcoreapp2.0"
+                        pathToPdbs = "test/${globals.githubRepoName}.Tests/bin/Release/netcoreapp2.0"
                         logVerbose = verboseLogging
                         delegate.stageName = stageName
                     }
@@ -152,7 +158,7 @@ pipeline {
                         resultsFile = "ResharperInspectCodeResults"
                         logVerbose = verboseLogging
                         delegate.stageName = stageName
-                    }                    
+                    }
 
                     completeSonarQubeAnalysis {
                         logVerbose = verboseLogging
@@ -167,7 +173,6 @@ pipeline {
                     }
 
                     if (changeset.pullRequest != null) {
-                        //pack for pull request
                         bat """
                             "C:\\Program Files\\dotnet\\dotnet.exe" pack ^
                             -c Release ^
@@ -181,8 +186,7 @@ pipeline {
                         }
                     }
 
-                    if (changeset.branch != null) { 
-                        //pack for branch
+                    if (changeset.branch != null) {
                         bat """
                             "C:\\Program Files\\dotnet\\dotnet.exe" pack ^
                             -c Release ^
@@ -202,12 +206,12 @@ pipeline {
                         }
 
                         def propset = "github.branch.name=${changeset.branchName} git.repo.name=${changeset.repoName} git.master.sha=${changeset.masterSha} jira.ticket=${changeset.jiraTicket}"
-                        
+
                         publishPackages {
                             credentialsId = artifactoryCredentialsId
                             repo = 'nuget-local'
                             version = "${packageVersion}-alpha"
-                            include = "${changeset.repoName}.${packageVersion}-alpha.nupkg"
+                            include = "*.${packageVersion}-alpha.nupkg"
                             uri = artifactoryUri
                             properties = propset
                             logVerbose = verboseLogging
@@ -219,7 +223,7 @@ pipeline {
             post {
                 always {
                     script {
-                        archive excludes: 'dist/*.zip,dist/*.nupkg,dist/*.md5', includes: 'dist/**/*.*'
+                        archiveArtifacts allowEmptyArchive: true, artifacts: 'dist/**/*.*', caseSensitive: false, excludes: 'dist/*.zip,dist/*.nupkg,dist/*.md5'
                         deleteWorkspace {
                             force = true
                         }
@@ -245,8 +249,8 @@ pipeline {
                     }
 
                     validateCodeReviews {
-                        repoName = globals.githubRepoName
-                        prNumber = globals.CHANGE_ID
+                        repoName = changeset.repoName
+                        prNumber = changeset.prNumber
                         author = changeset.author
                         failBuild = false
                         logVerbose = verboseLogging
@@ -260,7 +264,7 @@ pipeline {
                         logVerbose = verboseLogging
                     }
 
-                    node(nodeLabel) {
+                    node(windowsNode) {
                         mergePullRequest {
                             repoName = changeset.repoName
                             prNumber = changeset.prNumber
@@ -268,6 +272,22 @@ pipeline {
                             sha = changeset.commitSha
                             consulKey = changeset.consulBaseKey
                             credentialsId = gitCredentialsId
+                            logVerbose = verboseLogging
+                            delegate.stageName = stageName
+                        }
+
+                        updateMasterVersion {
+                            repoName = changeset.repoName
+                            version = semanticVersion
+                            logVerbose = verboseLogging
+                            delegate.stageName = stageName
+                        }
+
+                        tagCommit {
+                            repoName = changeset.repoName
+                            version = semanticVersion
+                            author = changeset.author
+                            email = changeset.commitInfo.author.email
                             logVerbose = verboseLogging
                             delegate.stageName = stageName
                         }
@@ -298,22 +318,6 @@ pipeline {
                         }
 
                         deleteDir()
-                    }
-
-                    tagCommit {
-                        repoName = changeset.repoName
-                        version = semanticVersion
-                        author = changeset.author
-                        email = changeset.commitInfo.author.email
-                        logVerbose = verboseLogging
-                        delegate.stageName = stageName
-                    }
-
-                    updateMasterVersion {
-                        repoName = changeset.repoName
-                        version = semanticVersion
-                        logVerbose = verboseLogging
-                        delegate.stageName = stageName
                     }
 
                     cleanupConsul {
