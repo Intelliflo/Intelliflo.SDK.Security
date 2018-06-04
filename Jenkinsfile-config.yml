@@ -1,5 +1,6 @@
 ---
 logVerbose: false
-build:
-  useDotNetCore: true
-  arguments: -c Release 
+projectsToBuild:
+- projectFile: Intelliflo.SDK.Security.sln
+  buildTool: dotnet
+  arguments: -c Release
