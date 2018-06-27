@@ -1,6 +1,30 @@
 ---
-logVerbose: false
+logVerbose: true
+solutionName: Intelliflo.SDK.Security
+displayName: Intelliflo.SDK.Security
+hasSubSystemTests: false
+versionTargetsFile: version.platform.targets
+unitTestsInclude: '**/bin/**/Reassure.Bus*Tests.dll'
 projectsToBuild:
 - projectFile: Intelliflo.SDK.Security.sln
   buildTool: dotnet
   arguments: -c Release
+codeQuality:
+  resharperInspectCode:
+    run: true
+  sonarQube:
+    run: true
+scan:
+  whiteSource:
+    run: false
+  dependencyCheck:
+    run: true
+    binariesLocation: src/Intelliflo.SDK.Security/bin/Release/netstandard2.0
+packaging:
+  isReferencePackage: true
+  publishToNugetOrg: true
+  tool: dotnet
+  configuration: Release
+  fileSpec: src\\*.csproj
+  createSubsysJsonFile: false
+  updateModConfigJsonFile: false
