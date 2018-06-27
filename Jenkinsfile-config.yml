@@ -3,8 +3,6 @@ logVerbose: true
 solutionName: Intelliflo.SDK.Security
 displayName: Intelliflo.SDK.Security
 hasSubSystemTests: false
-versionTargetsFile: version.platform.targets
-unitTestsInclude: '**/bin/**/Reassure.Bus*Tests.dll'
 projectsToBuild:
 - projectFile: Intelliflo.SDK.Security.sln
   buildTool: dotnet
@@ -14,6 +12,7 @@ codeQuality:
     run: true
   sonarQube:
     run: true
+    testRunnerType: vstest
 scan:
   whiteSource:
     run: false
