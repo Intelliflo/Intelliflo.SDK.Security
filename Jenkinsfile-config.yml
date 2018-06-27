@@ -25,6 +25,5 @@ packaging:
   publishToNugetOrg: true
   tool: dotnet
   configuration: Release
-  fileSpec: src\\*.csproj
   createSubsysJsonFile: false
   updateModConfigJsonFile: false
