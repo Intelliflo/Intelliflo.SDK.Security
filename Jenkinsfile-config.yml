@@ -9,7 +9,7 @@ projectsToBuild:
   arguments: -c Release
 codeQuality:
   resharperInspectCode:
-    run: true
+    run: false
   sonarQube:
     run: true
     testRunnerType: vstest
