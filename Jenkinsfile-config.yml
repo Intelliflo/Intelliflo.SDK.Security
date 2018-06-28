@@ -10,9 +10,6 @@ projectsToBuild:
 codeQuality:
   resharperInspectCode:
     run: false
-  sonarQube:
-    run: true
-    testRunnerType: vstest
 scan:
   whiteSource:
     run: false
