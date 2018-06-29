@@ -36,7 +36,7 @@ namespace Intelliflo.SDK.Security.Tests
         {
             var uri = new Uri(url);
 
-            var unsignedRequest = SignatureRequest.CreateSignRequest(uri, time, appId, secret, method, body, algorithm: "IO1-HMAC-SHA256");
+            var unsignedRequest = SignatureRequest.CreateSignRequest(uri, time, appId, secret, method, body, algorithm: "IO2-HMAC-SHA256");
 
             var signedUrl = underTest.Sign(unsignedRequest);
 
@@ -156,46 +156,6 @@ namespace Intelliflo.SDK.Security.Tests
                         "GET",
                         null,
                         900),
-                "http://development.matrix.local.co.uk/Pages/Account/IOAppInstall.aspx?event=before_appinstall&ioUserID=81960&ioAppID=fbd9844&ioReturnUrl=https://uat-apps.intelligent-office.net/preview-apps/fbd9844/install/preview?token=fbd9844-1518435999701&x-iflo-Algorithm=IO1-HMAC-SHA256&x-iflo-Credential=xxx&x-iflo-Date=20180222T114639Z&x-iflo-Expires=900&x-iflo-SignedHeaders=host&x-iflo-Signature=bwa2adaacgbkae8adwboagwadqbvagkaegbladeakwaragsabqbcagiatwbtafeauabtafyababgaecauabtaegatwbuafgazqboahmarab1aeyatqa9aa=="
-            };
-
-            yield return new object[]
-            {
-                            SignatureRequest.CreateSignRequest(
-                                new Uri(
-                                    "http://development.matrix.local.co.uk/Pages/Account/IOAppInstall.aspx?event=before_appinstall&ioUserID=81960&ioAppID=fbd9844&ioReturnUrl=https%3A%2F%2Fuat-apps.intelligent-office.net%2Fpreview-apps%2Ffbd9844%2Finstall%2Fpreview%3Ftoken%3Dfbd9844-1518435999701"),
-                                new DateTime(2019, 2, 22, 11, 46, 39, DateTimeKind.Utc),
-                                "aaa",
-                                "fbd9844"),
-                            "http://development.matrix.local.co.uk/Pages/Account/IOAppInstall.aspx?event=before_appinstall&ioUserID=81960&ioAppID=fbd9844&ioReturnUrl=https:%2F%2Fuat-apps.intelligent-office.net%2Fpreview-apps%2Ffbd9844%2Finstall%2Fpreview%3Ftoken%3Dfbd9844-1518435999701&x-iflo-Algorithm=IO1-HMAC-SHA256&x-iflo-Credential=aaa&x-iflo-Date=20190222T114639Z&x-iflo-Expires=60&x-iflo-SignedHeaders=host&x-iflo-Signature=vgboahyaeabiahiakwbrahyababsafiaswbhaeqaswayafuazgb6ahmawgbmae0azgaxahyadabxadiaugbpagmawqbvahgatwbvaeqavwbgagwaawa9aa=="
-            };
-
-            yield return new object[]
-            {
-                SignatureRequest.CreateSignRequest(
-                    new Uri(
-                        "http://dragon.local.co.uk/Pages/Account/IOAppInstall.aspx?event=before_appinstall&ioUserID=81960&ioAppID=fbd9844&ioReturnUrl=https://uat-apps.intelligent-office.net/preview-apps/fbd9844/install/preview?token=fbd9844-1518435999701"),
-                    new DateTime(2018, 2, 22, 11, 46, 39, DateTimeKind.Utc),
-                    "xxx",
-                    "fbd9844",
-                    "GET",
-                    null,
-                    900),
-                "http://dragon.local.co.uk/Pages/Account/IOAppInstall.aspx?event=before_appinstall&ioUserID=81960&ioAppID=fbd9844&ioReturnUrl=https://uat-apps.intelligent-office.net/preview-apps/fbd9844/install/preview?token=fbd9844-1518435999701&x-iflo-Algorithm=IO1-HMAC-SHA256&x-iflo-Credential=xxx&x-iflo-Date=20180222T114639Z&x-iflo-Expires=900&x-iflo-SignedHeaders=host&x-iflo-Signature=taa0agcaugbwaeyamqb0afoavga1ahuavabnahaavwbvaesasgbrafkaawbtaegangbyafeamqbhaegazaa4aeuadab6aheaqgbladeaaqbqadaacwa9aa=="
-            };
-
-            yield return new object[]
-            {
-                SignatureRequest.CreateSignRequest(
-                    new Uri(
-                        "http://development.matrix.local.co.uk/Pages/Account/IOAppInstall.aspx?event=before_appinstall&ioUserID=81960&ioAppID=fbd9844&ioReturnUrl=https://uat-apps.intelligent-office.net/preview-apps/fbd9844/install/preview?token=fbd9844-1518435999701"),
-                        new DateTime(2018, 2, 22, 11, 46, 39, DateTimeKind.Utc),
-                        "xxx",
-                        "fbd9844",
-                        "GET",
-                        null,
-                        900,
-                        "IO2-HMAC-SHA256"),
                 "http://development.matrix.local.co.uk/Pages/Account/IOAppInstall.aspx?event=before_appinstall&ioUserID=81960&ioAppID=fbd9844&ioReturnUrl=https://uat-apps.intelligent-office.net/preview-apps/fbd9844/install/preview?token=fbd9844-1518435999701&x-iflo-Algorithm=IO2-HMAC-SHA256&x-iflo-Credential=xxx&x-iflo-Date=20180222T114639Z&x-iflo-SignedHeaders=host&x-iflo-Signature=52ca5b4b18373eb2d255eb9ee68bc8968a0ace9d69b8870c4aed37dd1bc2e7c3"
             };
 
@@ -206,8 +166,7 @@ namespace Intelliflo.SDK.Security.Tests
                                     "http://development.matrix.local.co.uk/Pages/Account/IOAppInstall.aspx?event=before_appinstall&ioUserID=81960&ioAppID=fbd9844&ioReturnUrl=https%3A%2F%2Fuat-apps.intelligent-office.net%2Fpreview-apps%2Ffbd9844%2Finstall%2Fpreview%3Ftoken%3Dfbd9844-1518435999701"),
                                 new DateTime(2019, 2, 22, 11, 46, 39, DateTimeKind.Utc),
                                 "aaa",
-                                "fbd9844",
-                                algorithm:"IO2-HMAC-SHA256"),
+                                "fbd9844"),
                             "http://development.matrix.local.co.uk/Pages/Account/IOAppInstall.aspx?event=before_appinstall&ioUserID=81960&ioAppID=fbd9844&ioReturnUrl=https:%2F%2Fuat-apps.intelligent-office.net%2Fpreview-apps%2Ffbd9844%2Finstall%2Fpreview%3Ftoken%3Dfbd9844-1518435999701&x-iflo-Algorithm=IO2-HMAC-SHA256&x-iflo-Credential=aaa&x-iflo-Date=20190222T114639Z&x-iflo-SignedHeaders=host&x-iflo-Signature=1e8504d60c37391426e233818b9f2cd7dde4f2bd6e3719609103d09d28f30db6"
             };
 
@@ -221,8 +180,7 @@ namespace Intelliflo.SDK.Security.Tests
                     "fbd9844",
                     "GET",
                     null,
-                    900,
-                    "IO2-HMAC-SHA256"),
+                    900),
                 "http://dragon.local.co.uk/Pages/Account/IOAppInstall.aspx?event=before_appinstall&ioUserID=81960&ioAppID=fbd9844&ioReturnUrl=https://uat-apps.intelligent-office.net/preview-apps/fbd9844/install/preview?token=fbd9844-1518435999701&x-iflo-Algorithm=IO2-HMAC-SHA256&x-iflo-Credential=xxx&x-iflo-Date=20180222T114639Z&x-iflo-SignedHeaders=host&x-iflo-Signature=8cc267d46588af28dab6404eaa0e92986895ea21d3a369f3496634b92ad1921a"
             };
 
@@ -236,8 +194,7 @@ namespace Intelliflo.SDK.Security.Tests
                     "mySecret",
                     "GET",
                     null,
-                    900,
-                    "IO2-HMAC-SHA256"),
+                    900),
                 "https://developer.intelliflo.com/docs/Pre-SignedURLs?x=y&foo=bar&x-iflo-Algorithm=IO2-HMAC-SHA256&x-iflo-Credential=myCredential&x-iflo-Date=20180222T114639Z&x-iflo-SignedHeaders=host&x-iflo-Signature=7664790e62b988b01ebff76716cd5c6c651cc6b0ba350c7b6be29278f347a77e"
             };
         }
