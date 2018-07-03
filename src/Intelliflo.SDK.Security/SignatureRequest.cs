@@ -36,7 +36,7 @@ namespace Intelliflo.SDK.Security
             string method = "GET",
             string body = null,
             int expirySeconds = 60,
-            string algorithm = Io1HmacSha256SigningAlgorithm.AlgorithmName)
+            string algorithm = Io2HmacSha256SigningAlgorithm.AlgorithmName)
         {
             if (string.IsNullOrEmpty(secret))
                 throw new ArgumentException("May not be null or empty", nameof(secret));
