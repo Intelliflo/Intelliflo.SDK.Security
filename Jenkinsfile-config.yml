@@ -1,6 +1,28 @@
 ---
 logVerbose: false
+solutionName: Intelliflo.SDK.Security
+displayName: Intelliflo.SDK.Security
+hasSubSystemTests: false
 projectsToBuild:
 - projectFile: Intelliflo.SDK.Security.sln
   buildTool: dotnet
   arguments: -c Release
+codeQuality:
+  resharperInspectCode:
+    run: false
+  sonarQube:
+    run: true
+    testRunnerType: vstest
+scan:
+  whiteSource:
+    run: false
+  dependencyCheck:
+    run: true
+    binariesLocation: src/Intelliflo.SDK.Security/bin/Release/netstandard2.0
+packaging:
+  isReferencePackage: true
+  publishToNugetOrg: true
+  tool: dotnet
+  configuration: Release
+  createSubsysJsonFile: false
+  updateModConfigJsonFile: false
