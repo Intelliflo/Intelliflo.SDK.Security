@@ -3,7 +3,7 @@
  * ~~ MANAGED BY DEVOPS ~~
  */
 
-@Library('intellifloworkflow@IP-36352')
+//@Library('intellifloworkflow@IP-36352')
 import org.intelliflo.*
 
 def pipelineRuntime = new PipelineRuntime()
