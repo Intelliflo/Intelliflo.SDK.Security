@@ -179,8 +179,8 @@ pipeline {
     post {
         always {
             script {
-                reportBuildStatusToSlack {
-                    changeset = pipelineRuntime.changeset
+                reportBuildStatus {
+                    runtime = pipelineRuntime
                 }
             }
         }
