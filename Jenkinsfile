@@ -58,8 +58,12 @@ pipeline {
                         baseBranch = globals.CHANGE_TARGET
                         branchName = globals.BRANCH_NAME
                         buildNumber = globals.BUILD_NUMBER
-                        abortOnFailure = true
                         configFile = "Jenkinsfile-config.yml"
+                    }
+
+                    validatePipeline {
+                        runtime = pipelineRuntime
+                        abortOnFailure = true
                     }
 
                     buildCode {
