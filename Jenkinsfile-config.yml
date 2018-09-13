@@ -1,5 +1,6 @@
 ---
 logVerbose: false
+isDotNetCore: true
 solutionName: Intelliflo.SDK.Security
 displayName: Intelliflo.SDK.Security
 hasSubSystemTests: false
@@ -16,9 +17,6 @@ codeQuality:
 scan:
   whiteSource:
     run: false
-  dependencyCheck:
-    run: true
-    binariesLocation: src/Intelliflo.SDK.Security/bin/Release/netstandard2.0
 packaging:
   isReferencePackage: true
   publishToNugetOrg: true
