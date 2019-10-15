@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Intelliflo.SDK.Security.Utils
 {
-    internal static class UriUtility
+    public static class UriUtility
     {
         internal static string GetQuery(this Uri uri)
         {
