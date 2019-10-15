@@ -43,6 +43,7 @@ namespace Intelliflo.SDK.Security.Utils
                 if (filter(item.ToString()))
                     result.Add(item.ToString(), collection[item.ToString()]);
             }
+
             return result;
         }
 
