@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using FluentAssertions;
 using NUnit.Framework;
@@ -167,7 +167,7 @@ namespace Intelliflo.SDK.Security.Tests
                                 new DateTime(2019, 2, 22, 11, 46, 39, DateTimeKind.Utc),
                                 "aaa",
                                 "fbd9844"),
-                            "http://development.matrix.local.co.uk/Pages/Account/IOAppInstall.aspx?event=before_appinstall&ioUserID=81960&ioAppID=fbd9844&ioReturnUrl=https:%2F%2Fuat-apps.intelligent-office.net%2Fpreview-apps%2Ffbd9844%2Finstall%2Fpreview%3Ftoken%3Dfbd9844-1518435999701&x-iflo-Algorithm=IO2-HMAC-SHA256&x-iflo-Credential=aaa&x-iflo-Date=20190222T114639Z&x-iflo-SignedHeaders=host&x-iflo-Signature=1e8504d60c37391426e233818b9f2cd7dde4f2bd6e3719609103d09d28f30db6"
+                            "http://development.matrix.local.co.uk/Pages/Account/IOAppInstall.aspx?event=before_appinstall&ioUserID=81960&ioAppID=fbd9844&ioReturnUrl=https%3A%2F%2Fuat-apps.intelligent-office.net%2Fpreview-apps%2Ffbd9844%2Finstall%2Fpreview%3Ftoken%3Dfbd9844-1518435999701&x-iflo-Algorithm=IO2-HMAC-SHA256&x-iflo-Credential=aaa&x-iflo-Date=20190222T114639Z&x-iflo-SignedHeaders=host&x-iflo-Signature=1e8504d60c37391426e233818b9f2cd7dde4f2bd6e3719609103d09d28f30db6"
             };
 
             yield return new object[]
