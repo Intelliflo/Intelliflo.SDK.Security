@@ -1,0 +1,16 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: Intelliflo.SDK.Security
+  description: Intelliflo OpenAPI and App SDK library containing security related features
+  links:
+    - url: https://github.com/intelliflo/Intelliflo.SDK.Security/
+      title: GitHub repository
+      icon: github
+  annotations:
+    github.com/project-slug: Intelliflo/Intelliflo.SDK.Security
+    github.com/team-slug: Intelliflo/technical-architectural
+spec:
+  type: library
+  lifecycle: production
+  owner: technical_architectural
