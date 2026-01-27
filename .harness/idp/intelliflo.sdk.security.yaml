@@ -1,0 +1,22 @@
+apiVersion: harness.io/v1
+kind: Component
+type: library
+identifier: intelliflo.sdk.security
+name: Intelliflo.SDK.Security
+owner: technical_architectural
+spec:
+  lifecycle: production
+  dependencyOf:
+  - component:account/microservice.appd.sdk
+  - component:account/microservice-planapplication
+metadata:
+  description: Intelliflo OpenAPI and App SDK library containing security related
+    features
+  annotations:
+    github.com/project-slug: Intelliflo/Intelliflo.SDK.Security
+    github.com/team-slug: Intelliflo/technical-architectural
+    backstage.io/source-location: url:https://github.com/Intelliflo/Intelliflo.SDK.Security/tree/harness_idp/.harness/idp/
+  links:
+  - url: https://github.com/intelliflo/Intelliflo.SDK.Security/
+    title: GitHub repository
+    icon: github
